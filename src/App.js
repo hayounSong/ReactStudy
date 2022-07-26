@@ -2,10 +2,9 @@ import logo from './logo.svg';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRef } from 'react';
 import Lifecycle from './Lifecycle';
-import OptimzeTest from './OptimizeTest';
 
 // const dummyList=[
 //   {
@@ -56,7 +55,9 @@ const App=()=> {
     getData();
   },[])
 const dataId= useRef(0);
-const onCreate= (author,content,emotion) =>{
+
+
+const onCreate= useCallback((author,content,emotion) =>{
   const created_date=new Date().getTime();
   const newItem={
     author,
@@ -66,20 +67,20 @@ const onCreate= (author,content,emotion) =>{
     id:dataId.current
   };
   dataId.current+=1;
-  setData([newItem,...data]);
+  setData((data)=>[newItem,...data]);
 
-};
+},[]);
 
-const onEdit=(targetId,newContent)=>{
-  setData(
+const onEdit=useCallback((targetId,newContent)=>{
+  setData((data)=>
     data.map((it)=>it.id===targetId ? {...it,content:newContent}:it)
   )
-}
-const onRemove=(targetId)=>{
+},[])
+const onRemove=useCallback((targetId)=>{
   
-  const newDiaryList = data.filter((it) => it.id !==targetId);
-  setData(newDiaryList)
-}
+  setData(data=>data.filter((it) => it.id !==targetId));
+  
+},[])
 
 const getDiaryAnalysis=useMemo(()=>{
   
@@ -94,13 +95,13 @@ const getDiaryAnalysis=useMemo(()=>{
 const {goodCount,badCount,goodRatio}=getDiaryAnalysis;
   return (
     <div className="App">
-    <OptimzeTest></OptimzeTest>
+    
     <DiaryEditor onCreate={onCreate}></DiaryEditor>
     <div>전체일기 :{data.length}</div>
     <div>기분 좋은 일기 개수: {goodCount}</div>
     <div>기분 나쁜 일기 개수: {badCount}</div>
     <div>기분 좋은 일기 비율: {goodRatio}</div>
-    <DiaryList onEdit={onEdit} diaryList={data} onRemove={onRemove}></DiaryList>
+    <DiaryList key={data.id} onEdit={onEdit} diaryList={data} onRemove={onRemove}></DiaryList>
     </div>
   );
 }

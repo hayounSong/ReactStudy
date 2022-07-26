@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React,{ useRef, useState } from "react";
 const DiaryItem = ({author,content,created_date,emotion,id,onRemove,onEdit})=>{
     const [isEdit,setIsEdit]= useState(false);
     const [localContent,setLocalContent]=useState("");
@@ -51,7 +51,7 @@ return <div className="DiaryItem">
     </>
     :<>
     <button onClick={()=>{
-        console.log(id);
+        
         if(window.confirm("일기를 정말 삭제할까요?")){
             onRemove(id);
         }
@@ -65,4 +65,4 @@ return <div className="DiaryItem">
 
 }
 
-export default DiaryItem
+export default React.memo(DiaryItem)
